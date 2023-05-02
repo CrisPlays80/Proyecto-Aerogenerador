@@ -14,11 +14,11 @@ struct Aerogenerador{
     Aerogenerador* sig_aero;
     Aerogenerador* back_aero;
     Registro* sig_reg;
-}*cab = NULL, *final = NULL;
+};
+ 
 
 
-
-void ingresar_Aerogenerador(int id){
+void ingresar_Aerogenerador(Aerogenerador* &cab,Aerogenerador* &final, int id){
     Aerogenerador* nuevo = new Aerogenerador;
     nuevo->id = id;
     nuevo->sig_reg = NULL;
@@ -39,13 +39,45 @@ void ingresar_Aerogenerador(int id){
     }
 }
 
-void imprimir(){
-    Aerogenerador *actual = new Aerogenerador();
-	actual = cab;
+Registro* registro(float puntaPala, float vWind, float eMechanic, float eProducida){
+    Registro* registro = new Registro;
+    registro->v_punta_pala = puntaPala;
+    registro->v_wind = vWind;
+    registro->e_mechanic = eMechanic;
+    registro->e_production = eProducida;
+    registro->sig_reg = NULL;
+    return registro;
+}
+
+void ingresar_registro(Registro* &posicion, float puntaPala, float vWind, float eMechanic, float eProducida){
+    Registro* nuevo = registro(puntaPala, vWind, eMechanic, eProducida);
+    Registro* aux;
+    if(posicion == NULL){
+        posicion = nuevo;
+    }else{
+        aux = posicion;
+        while(aux->sig_reg != NULL){
+            aux = aux->sig_reg;
+        }
+        aux->sig_reg = nuevo;
+    }
+}
+
+void imprimir(Aerogenerador* cab){
+    Aerogenerador *actual = new Aerogenerador;
+	Registro* aux;
+    actual = cab;
+
 	if (cab!=NULL) {
 		do {
-			cout << '\n' << actual -> id << '\n';
+			cout << actual -> id << ':';
+            aux = actual->sig_reg;
+            while(aux != NULL){
+                cout << aux-> v_punta_pala << " ";
+                aux = aux -> sig_reg;
+            }
 			actual = actual -> sig_aero;
+            cout << endl;
 		} while(actual!=cab);
 	}else{
 		cout << "Lista vacia" << '\n';
@@ -54,6 +86,25 @@ void imprimir(){
 
 
 int main(){
-    
+    Aerogenerador* cab = NULL;
+    Aerogenerador* final = NULL;
+    for (int i = 0; i < 10; i++)
+    {
+        ingresar_Aerogenerador(cab, final, i);
+    }
+    int x = 10;
+    Aerogenerador* aux = cab;
+    do{
+        ingresar_registro(aux->sig_reg, x--, 1, 1, 1);
+        aux = aux->sig_aero;
+    }while(aux != cab);
+    aux = cab;
+    x = 20;
+    do{
+        ingresar_registro(aux->sig_reg, x--, 1, 1, 1);
+        aux = aux->sig_aero;
+    }while(aux != cab);
+    imprimir(cab);
+
     return 0;
 }
