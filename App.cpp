@@ -1,4 +1,5 @@
 #include <iostream>
+#include <conio.h>
 using namespace std;
 
 struct Registro{
@@ -72,11 +73,15 @@ void imprimir(Aerogenerador* cab){
 
 	if (cab!=NULL) {
 		do {
-			cout << actual -> id << ':';
+			cout << "Aerogenerador " << actual -> id << ':' << endl;
             aux = actual->sig_reg;
             while(aux != NULL){
-                cout << aux-> v_punta_pala << " ";
-                aux = aux -> sig_reg;
+                cout<< aux->hour<<" hora." << endl;
+                cout << aux->v_punta_pala << " ";
+                cout<< aux->v_wind <<" ";
+                cout<< aux->e_mechanic<<" ";
+                cout<< aux->e_production<< endl;
+                aux = aux -> sig_reg ;
             }
 			actual = actual -> sig_aero;
             cout << endl;
@@ -89,7 +94,7 @@ void imprimir(Aerogenerador* cab){
 //Por cada 2000 joules se generan 750MW cada 10minutos
 //Cada joule produce 0,375MW
 float productionEnergy(float energyMechanic){
-     return energyMechanic*0.375;   
+    return energyMechanic * 0.375;   
 }
 
 void lowerEnergy(Aerogenerador* cab){
@@ -129,28 +134,27 @@ void mayorEnergy(Aerogenerador* cab){
         sumaEnergy = 0;
         while(registro != NULL){
             sumaEnergy += registro->e_production;
-            array[i] = sumaEnergy;
             registro = registro->sig_reg;
-            i++;
         }
+        array[i] = sumaEnergy;
         if(mayor < sumaEnergy){
             mayor = sumaEnergy;
         }
+        i++;
         aux = aux -> sig_aero;
     }while(aux != cab);
 
     i = 0;
-    aux = cab;
-    while(aux != cab) {
+    do{    
         if(array[i] == mayor){
             cout << "El aerogenerador " << aux -> id << " es el de mayor produccion total de: " << mayor << endl;
         }
         i++;
         aux = aux-> sig_aero;
-    }
+    }while(aux != cab);
 }
 
-void LeesEnergy(Aerogenerador * cab){
+void lessEnergy(Aerogenerador * cab){
     Aerogenerador * aux = cab;
     Registro * registro;
     int hour, hour1, hour2, hour3, hour4;
@@ -163,7 +167,7 @@ void LeesEnergy(Aerogenerador * cab){
                 sumaEnergy1 += registro->e_production;
             else if(registro->hour == 12)
                 sumaEnergy2 += registro->e_production;
-            else if(registro->hour ==18)
+            else if(registro->hour == 18)
                 sumaEnergy3 += registro->e_production;
             else if(registro->hour == 24)
                 sumaEnergy4 += registro->e_production;
@@ -187,31 +191,83 @@ void reparticleEnergy(float energy){
     cout << "La energia total producida en las casas de las personas residentes en la Guajira sera de: " << energy * 0.55 << "MW" << endl;
     cout << "La energia total producida en los alumbrados de las ciudadas de Guajira sera de: " << energy * 0.25 << "MW" << endl;
     cout << "La energia total producida en las edificaciones publicas de la Guajira sera de: " << energy * 0.20 << "MW" << endl;
-    cout << "El total de energia que se producio en la guajira fue de: " << energy << endl;
+    perdidaEnergy(energy);
 }
 
 int main(){
     Aerogenerador* cab = NULL;
     Aerogenerador* final = NULL;
-    for (int i = 0; i < 10; i++)
-    {
-        ingresar_Aerogenerador(cab, final, i);
-    }
-    int x = 10;
-    Aerogenerador* aux = cab;
-
-    do{
-        ingresar_registro(aux -> sig_reg, x--, 1, 1, 1, 1);
-        aux = aux -> sig_aero;
-    }while(aux != cab);
-    aux = cab;
-    x = 20;
-
-    do{
-        ingresar_registro(aux->sig_reg, x--, 1, 1, 1, 1);
-        aux = aux->sig_aero;
-    }while(aux != cab);
-    imprimir(cab);
+    Registro* aux_registro;
+    bool menu = true;
+    int opc, vel_pun, vel_w, e_mec, hour = 0;
+    float e_mec_total = 0;
+    while(menu){
+    	cout<<"Menu\n"
+    	"Seleccione una opcion\n"
+	   	"0. salir\n"
+    	"1. ingresar los aerogeneradores\n"
+    	"2. imprimir los datos ingresados\n"
+    	"3. mostrar el reporte de produccion energetica\n"
+    	"4. mostrar el aerogenerador con la mayor produccion energetica\n"
+    	"5. calcular la energia perdida durante la transformacion\n"
+    	"6. mostrar la hora de menor produccion energetica\n"
+    	"7. calcular la reparticion de la energia producida\n";
+    	cin>>opc;
+    	
+    	switch(opc){
+    		case 1:
+    			{
+    				for (int i = 0; i < 1; i++){
+        				ingresar_Aerogenerador(cab, final, i + 1);
+    				}
+	    			Aerogenerador* aux = cab;
+	    			
+	    			do{
+	    				hour = 0;
+		    			for(int i = 0; i < 4; i++){
+		    				hour += 6;
+                            cout << "Aerogenerador " << aux->id << endl;
+		    				cout << "Ingrese reporte de las " << hour << endl;
+		    				cout<<"ingrese la velocidad punta de pala"<<endl;
+		    				cin>>vel_pun;
+		    				cout<<"ingrese la velocidad del viento"<<endl;
+		    				cin>>vel_w;
+		    				cout<<"ingrese la energia mecanica"<<endl;
+		    				cin>>e_mec;
+		    				e_mec_total += productionEnergy(e_mec);
+		        			ingresar_registro(aux->sig_reg, vel_pun, vel_w, e_mec, productionEnergy(e_mec), hour);
+                        }
+		        		aux = aux -> sig_aero;
+	    			}while(aux != cab);
+				}break;
+    		case 2:
+				imprimir(cab);
+				break;
+			case 3:
+				lowerEnergy(cab);
+				break;
+			case 4:
+				mayorEnergy(cab);
+				break;
+			case 5:
+				perdidaEnergy(e_mec_total);
+				break;
+			case 6:
+				lessEnergy(cab);
+				break;
+			case 7:
+				reparticleEnergy(e_mec_total);
+				break;
+			case 0:
+				menu = false;
+				break;
+			default: 
+				cout << "Numero equivocado" << endl;
+			break;
+		}
+    
+	}
 
     return 0;
+    
 }
