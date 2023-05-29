@@ -217,7 +217,7 @@ int main(){
     	switch(opc){
     		case 1:
     			{
-    				for (int i = 0; i < 1; i++){
+    				for (int i = 0; i < 3; i++){
         				ingresar_Aerogenerador(cab, final, i + 1);
     				}
 	    			Aerogenerador* aux = cab;
@@ -265,7 +265,7 @@ int main(){
 				cout << "Numero equivocado" << endl;
 			break;
 		}
-    
+        getch();
 	}
 
     return 0;
